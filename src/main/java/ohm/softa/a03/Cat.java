@@ -3,16 +3,18 @@ package ohm.softa.a03;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import static ohm.softa.a03.Cat.State.*;
+import static ohm.softa.a03.State.*;
 
 public class Cat {
 	private static final Logger logger = LogManager.getLogger();
 
 	// valid states
-	public enum State {SLEEPING, HUNGRY, DIGESTING, PLAYFUL, DEAD}
+	// public enum State {SLEEPING, HUNGRY, DIGESTING, PLAYFUL, DEAD}
 
 	// initially, animals are sleeping
-	private State state = State.SLEEPING;
+	// private State state = State.SLEEPING;
+
+	private State state;
 
 	// state durations (set via constructor), ie. the number of ticks in each state
 	private final int sleep;
@@ -29,9 +31,16 @@ public class Cat {
 		this.sleep = sleep;
 		this.awake = awake;
 		this.digest = digest;
+
+		state = new Sleeping(sleep);
 	}
 
-	public void tick(){
+	public void tick() {
+		state = state.tick(this);
+	}
+
+	/*
+	public void tick2(){
 		logger.info("tick()");
 		time = time + 1;
 
@@ -73,39 +82,34 @@ public class Cat {
 		logger.info(state.name());
 
 	}
+	*/
 
 	/**
 	 * This would be a user interaction: feed the cat to change its state!
 	 */
-	public void feed(){
-		if (!isHungry())
-			throw new IllegalStateException("Can't stuff a cat...");
-
-		logger.info("You feed the cat...");
-
-		// change state and reset the timer
-		state = State.DIGESTING;
-		timeDigesting = 0;
+	// TODO: Logic
+	public void feed(Cat cat){
+		return new Digesting(state.getTime(), state.getDuration())
 	}
 
 	public boolean isAsleep() {
-		return state.equals(State.SLEEPING);
+		return state instanceof Sleeping;
 	}
 
 	public boolean isPlayful() {
-		return state.equals(State.PLAYFUL);
+		return state instanceof Playful;
 	}
 
 	public boolean isHungry() {
-		return state.equals(State.HUNGRY);
+		return state instanceof Hungry;
 	}
 
 	public boolean isDigesting() {
-		return state.equals(State.DIGESTING);
+		return state instanceof Digesting;
 	}
 
 	public boolean isDead() {
-		return state == State.DEAD;
+		return state instanceof Dead;
 	}
 
 	@Override
@@ -114,3 +118,4 @@ public class Cat {
 	}
 
 }
+
