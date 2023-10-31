@@ -35,7 +35,13 @@ public class Cat {
 		state = new Sleeping(sleep);
 	}
 
-	public void tick() {
+	/// Gets duration the cat has been awake
+
+	public int getAwake() {
+		return awake;
+	}
+
+	final public void tick() {
 		state = state.tick(this);
 	}
 
@@ -86,10 +92,11 @@ public class Cat {
 
 	/**
 	 * This would be a user interaction: feed the cat to change its state!
+	 * Returns the new state.
 	 */
-	// TODO: Logic
-	public void feed(Cat cat){
-		return new Digesting(state.getTime(), state.getDuration())
+	public State feed() {
+		// Switches to `Digesting` immediately after being fed, regardless of how long the cat has been hungry
+		return new Digesting(state.getTime(), state.getDuration());
 	}
 
 	public boolean isAsleep() {

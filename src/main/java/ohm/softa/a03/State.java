@@ -4,7 +4,7 @@ import static ohm.softa.a03.Cat.*;
 
 public abstract class State {
     private int time = 0;
-    final int duration;
+    final private int duration;
 
     public State(int duration) {
         this.duration = duration;
@@ -27,12 +27,13 @@ public abstract class State {
         return null;
     }
 
-    /// The next state
+    /// The next state, abstract bc it's defined differently for every state:
     public abstract State sucessor(Cat cat);
 
     public int getTime() {
         return time;
     }
+
     public int getDuration() {
         return duration;
     }
@@ -43,9 +44,10 @@ class Digesting extends State {
     public Digesting(int time, int duration) {
         super(time, duration);
     }
+
     @Override
     public State sucessor(Cat cat) {
-        return null;
+        return new Playful(getDuration());
     }
 }
 
@@ -55,9 +57,14 @@ class Hungry extends State {
         super(duration);
     }
 
+    // If fed, return Digesting, else return Dead
     @Override
     public State sucessor(Cat cat) {
-        return null;
+        if (getTime() == cat.getAwake()) {
+            return new Dead();
+        } else {
+            return new Digesting(getTime(), getDuration());
+        }
     }
 }
 
@@ -69,7 +76,7 @@ class Playful extends State {
 
     @Override
     public State sucessor(Cat cat) {
-        return null;
+        return new Sleeping(getDuration());
     }
 }
 
@@ -81,16 +88,19 @@ class Sleeping extends State {
 
     @Override
     public State sucessor(Cat cat) {
+        // Is hungry for as long as cat is awake
         return new Hungry(cat.getAwake());
     }
 }
 
 class Dead extends State {
     // TODO: Logic
-    public Dead(int duration) {
-        super(duration);
+    public Dead() {
+        // Death is infinite
+        super(Integer.MAX_VALUE);
     }
 
+    // Who knows?
     @Override
     public State sucessor(Cat cat) {
         return null;
